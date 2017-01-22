@@ -1,5 +1,6 @@
 package actors
 
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util
 import java.util.Date
@@ -55,6 +56,11 @@ class AppWebSocketActor(identity:String, out: ActorRef) extends Actor {
     case msg: String =>
       println(msg)
       out ! ("echo: " + msg)
+    case buffer: Array[Byte] =>
+      println(s"receive bytes , lenght:${buffer.length}")
+      out ! ("echo: " + buffer.size).getBytes(StandardCharsets.UTF_8)
+    case an:Any =>
+      println(an.getClass)
   }
 
   override def postStop() = {

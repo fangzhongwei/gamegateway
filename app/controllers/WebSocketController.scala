@@ -15,7 +15,7 @@ import scala.concurrent.Future
   */
 @Singleton
 class WebSocketController @Inject()(implicit system: ActorSystem, materializer: Materializer) extends Controller {
-  def greeter = WebSocket.acceptOrResult[String, String] { request =>
+  def greeter = WebSocket.acceptOrResult[Array[Byte], Array[Byte]] { request =>
     Future.successful(checkAuto(request) match {
       case None => Left(Forbidden)
       case Some(_) => Right(ActorFlow.actorRef(AppWebSocketActor.props))
