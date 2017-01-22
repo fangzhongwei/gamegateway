@@ -1,3 +1,3 @@
-# play-websocket-scala
+# gamegateway
 
-play-websocket-scala
+gamegateway
