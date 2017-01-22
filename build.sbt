@@ -1,4 +1,4 @@
-name := "play-websocket-scala"
+name := "gamegateway"
 
 version := "1.0-SNAPSHOT"
 
