@@ -2,6 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /greeter                        controllers.WebSocketController.greeter
-GET     /pushTime                       controllers.WebSocketController.pushTime
-GET     /kill                           controllers.WebSocketController.kill
+GET     /greeter                        com.jxjxgo.gamegateway.controllers.WebSocketController.greeter
+GET     /pushTime                       com.jxjxgo.gamegateway.controllers.WebSocketController.pushTime
+GET     /kill                           com.jxjxgo.gamegateway.controllers.WebSocketController.kill
