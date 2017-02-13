@@ -15,7 +15,20 @@ final case class SocketResponse(
     p6: String = "",
     p7: String = "",
     p8: String = "",
-    p9: String = ""
+    p9: String = "",
+    p10: String = "",
+    p11: String = "",
+    p12: String = "",
+    p13: String = "",
+    p14: String = "",
+    p15: String = "",
+    p16: String = "",
+    p17: String = "",
+    p18: String = "",
+    p19: String = "",
+    p20: String = "",
+    p21: String = "",
+    p22: String = ""
     ) extends com.trueaccord.scalapb.GeneratedMessage with com.trueaccord.scalapb.Message[SocketResponse] with com.trueaccord.lenses.Updatable[SocketResponse] {
     @transient
     private[this] var __serializedSizeCachedValue: Int = 0
@@ -30,6 +43,19 @@ final case class SocketResponse(
       if (p7 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(7, p7) }
       if (p8 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(8, p8) }
       if (p9 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(9, p9) }
+      if (p10 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(10, p10) }
+      if (p11 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(11, p11) }
+      if (p12 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(12, p12) }
+      if (p13 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(13, p13) }
+      if (p14 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(14, p14) }
+      if (p15 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(15, p15) }
+      if (p16 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(16, p16) }
+      if (p17 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(17, p17) }
+      if (p18 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(18, p18) }
+      if (p19 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(19, p19) }
+      if (p20 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(20, p20) }
+      if (p21 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(21, p21) }
+      if (p22 != "") { __size += _root_.com.google.protobuf.CodedOutputStream.computeStringSize(22, p22) }
       __size
     }
     final override def serializedSize: Int = {
@@ -95,6 +121,84 @@ final case class SocketResponse(
           _output__.writeString(9, __v)
         }
       };
+      {
+        val __v = p10
+        if (__v != "") {
+          _output__.writeString(10, __v)
+        }
+      };
+      {
+        val __v = p11
+        if (__v != "") {
+          _output__.writeString(11, __v)
+        }
+      };
+      {
+        val __v = p12
+        if (__v != "") {
+          _output__.writeString(12, __v)
+        }
+      };
+      {
+        val __v = p13
+        if (__v != "") {
+          _output__.writeString(13, __v)
+        }
+      };
+      {
+        val __v = p14
+        if (__v != "") {
+          _output__.writeString(14, __v)
+        }
+      };
+      {
+        val __v = p15
+        if (__v != "") {
+          _output__.writeString(15, __v)
+        }
+      };
+      {
+        val __v = p16
+        if (__v != "") {
+          _output__.writeString(16, __v)
+        }
+      };
+      {
+        val __v = p17
+        if (__v != "") {
+          _output__.writeString(17, __v)
+        }
+      };
+      {
+        val __v = p18
+        if (__v != "") {
+          _output__.writeString(18, __v)
+        }
+      };
+      {
+        val __v = p19
+        if (__v != "") {
+          _output__.writeString(19, __v)
+        }
+      };
+      {
+        val __v = p20
+        if (__v != "") {
+          _output__.writeString(20, __v)
+        }
+      };
+      {
+        val __v = p21
+        if (__v != "") {
+          _output__.writeString(21, __v)
+        }
+      };
+      {
+        val __v = p22
+        if (__v != "") {
+          _output__.writeString(22, __v)
+        }
+      };
     }
     def mergeFrom(`_input__`: _root_.com.google.protobuf.CodedInputStream): com.jxjxgo.gamegateway.domain.ws.resp.socketresponse.SocketResponse = {
       var __p1 = this.p1
@@ -106,6 +210,19 @@ final case class SocketResponse(
       var __p7 = this.p7
       var __p8 = this.p8
       var __p9 = this.p9
+      var __p10 = this.p10
+      var __p11 = this.p11
+      var __p12 = this.p12
+      var __p13 = this.p13
+      var __p14 = this.p14
+      var __p15 = this.p15
+      var __p16 = this.p16
+      var __p17 = this.p17
+      var __p18 = this.p18
+      var __p19 = this.p19
+      var __p20 = this.p20
+      var __p21 = this.p21
+      var __p22 = this.p22
       var _done__ = false
       while (!_done__) {
         val _tag__ = _input__.readTag()
@@ -129,6 +246,32 @@ final case class SocketResponse(
             __p8 = _input__.readString()
           case 74 =>
             __p9 = _input__.readString()
+          case 82 =>
+            __p10 = _input__.readString()
+          case 90 =>
+            __p11 = _input__.readString()
+          case 98 =>
+            __p12 = _input__.readString()
+          case 106 =>
+            __p13 = _input__.readString()
+          case 114 =>
+            __p14 = _input__.readString()
+          case 122 =>
+            __p15 = _input__.readString()
+          case 130 =>
+            __p16 = _input__.readString()
+          case 138 =>
+            __p17 = _input__.readString()
+          case 146 =>
+            __p18 = _input__.readString()
+          case 154 =>
+            __p19 = _input__.readString()
+          case 162 =>
+            __p20 = _input__.readString()
+          case 170 =>
+            __p21 = _input__.readString()
+          case 178 =>
+            __p22 = _input__.readString()
           case tag => _input__.skipField(tag)
         }
       }
@@ -141,7 +284,20 @@ final case class SocketResponse(
           p6 = __p6,
           p7 = __p7,
           p8 = __p8,
-          p9 = __p9
+          p9 = __p9,
+          p10 = __p10,
+          p11 = __p11,
+          p12 = __p12,
+          p13 = __p13,
+          p14 = __p14,
+          p15 = __p15,
+          p16 = __p16,
+          p17 = __p17,
+          p18 = __p18,
+          p19 = __p19,
+          p20 = __p20,
+          p21 = __p21,
+          p22 = __p22
       )
     }
     def withP1(__v: String): SocketResponse = copy(p1 = __v)
@@ -153,6 +309,19 @@ final case class SocketResponse(
     def withP7(__v: String): SocketResponse = copy(p7 = __v)
     def withP8(__v: String): SocketResponse = copy(p8 = __v)
     def withP9(__v: String): SocketResponse = copy(p9 = __v)
+    def withP10(__v: String): SocketResponse = copy(p10 = __v)
+    def withP11(__v: String): SocketResponse = copy(p11 = __v)
+    def withP12(__v: String): SocketResponse = copy(p12 = __v)
+    def withP13(__v: String): SocketResponse = copy(p13 = __v)
+    def withP14(__v: String): SocketResponse = copy(p14 = __v)
+    def withP15(__v: String): SocketResponse = copy(p15 = __v)
+    def withP16(__v: String): SocketResponse = copy(p16 = __v)
+    def withP17(__v: String): SocketResponse = copy(p17 = __v)
+    def withP18(__v: String): SocketResponse = copy(p18 = __v)
+    def withP19(__v: String): SocketResponse = copy(p19 = __v)
+    def withP20(__v: String): SocketResponse = copy(p20 = __v)
+    def withP21(__v: String): SocketResponse = copy(p21 = __v)
+    def withP22(__v: String): SocketResponse = copy(p22 = __v)
     def getField(__field: _root_.com.google.protobuf.Descriptors.FieldDescriptor): scala.Any = {
       __field.getNumber match {
         case 1 => {
@@ -191,6 +360,58 @@ final case class SocketResponse(
           val __t = p9
           if (__t != "") __t else null
         }
+        case 10 => {
+          val __t = p10
+          if (__t != "") __t else null
+        }
+        case 11 => {
+          val __t = p11
+          if (__t != "") __t else null
+        }
+        case 12 => {
+          val __t = p12
+          if (__t != "") __t else null
+        }
+        case 13 => {
+          val __t = p13
+          if (__t != "") __t else null
+        }
+        case 14 => {
+          val __t = p14
+          if (__t != "") __t else null
+        }
+        case 15 => {
+          val __t = p15
+          if (__t != "") __t else null
+        }
+        case 16 => {
+          val __t = p16
+          if (__t != "") __t else null
+        }
+        case 17 => {
+          val __t = p17
+          if (__t != "") __t else null
+        }
+        case 18 => {
+          val __t = p18
+          if (__t != "") __t else null
+        }
+        case 19 => {
+          val __t = p19
+          if (__t != "") __t else null
+        }
+        case 20 => {
+          val __t = p20
+          if (__t != "") __t else null
+        }
+        case 21 => {
+          val __t = p21
+          if (__t != "") __t else null
+        }
+        case 22 => {
+          val __t = p22
+          if (__t != "") __t else null
+        }
       }
     }
     override def toString: String = _root_.com.trueaccord.scalapb.TextFormat.printToUnicodeString(this)
@@ -211,7 +432,20 @@ object SocketResponse extends com.trueaccord.scalapb.GeneratedMessageCompanion[c
       __fieldsMap.getOrElse(__fields.get(5), "").asInstanceOf[String],
       __fieldsMap.getOrElse(__fields.get(6), "").asInstanceOf[String],
       __fieldsMap.getOrElse(__fields.get(7), "").asInstanceOf[String],
-      __fieldsMap.getOrElse(__fields.get(8), "").asInstanceOf[String]
+      __fieldsMap.getOrElse(__fields.get(8), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(9), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(10), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(11), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(12), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(13), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(14), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(15), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(16), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(17), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(18), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(19), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(20), "").asInstanceOf[String],
+      __fieldsMap.getOrElse(__fields.get(21), "").asInstanceOf[String]
     )
   }
   def descriptor: _root_.com.google.protobuf.Descriptors.Descriptor = SocketresponseProto.descriptor.getMessageTypes.get(0)
@@ -229,6 +463,19 @@ object SocketResponse extends com.trueaccord.scalapb.GeneratedMessageCompanion[c
     def p7: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p7)((c_, f_) => c_.copy(p7 = f_))
     def p8: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p8)((c_, f_) => c_.copy(p8 = f_))
     def p9: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p9)((c_, f_) => c_.copy(p9 = f_))
+    def p10: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p10)((c_, f_) => c_.copy(p10 = f_))
+    def p11: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p11)((c_, f_) => c_.copy(p11 = f_))
+    def p12: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p12)((c_, f_) => c_.copy(p12 = f_))
+    def p13: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p13)((c_, f_) => c_.copy(p13 = f_))
+    def p14: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p14)((c_, f_) => c_.copy(p14 = f_))
+    def p15: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p15)((c_, f_) => c_.copy(p15 = f_))
+    def p16: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p16)((c_, f_) => c_.copy(p16 = f_))
+    def p17: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p17)((c_, f_) => c_.copy(p17 = f_))
+    def p18: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p18)((c_, f_) => c_.copy(p18 = f_))
+    def p19: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p19)((c_, f_) => c_.copy(p19 = f_))
+    def p20: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p20)((c_, f_) => c_.copy(p20 = f_))
+    def p21: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p21)((c_, f_) => c_.copy(p21 = f_))
+    def p22: _root_.com.trueaccord.lenses.Lens[UpperPB, String] = field(_.p22)((c_, f_) => c_.copy(p22 = f_))
   }
   final val P1_FIELD_NUMBER = 1
   final val P2_FIELD_NUMBER = 2
@@ -239,4 +486,17 @@ object SocketResponse extends com.trueaccord.scalapb.GeneratedMessageCompanion[c
   final val P7_FIELD_NUMBER = 7
   final val P8_FIELD_NUMBER = 8
   final val P9_FIELD_NUMBER = 9
+  final val P10_FIELD_NUMBER = 10
+  final val P11_FIELD_NUMBER = 11
+  final val P12_FIELD_NUMBER = 12
+  final val P13_FIELD_NUMBER = 13
+  final val P14_FIELD_NUMBER = 14
+  final val P15_FIELD_NUMBER = 15
+  final val P16_FIELD_NUMBER = 16
+  final val P17_FIELD_NUMBER = 17
+  final val P18_FIELD_NUMBER = 18
+  final val P19_FIELD_NUMBER = 19
+  final val P20_FIELD_NUMBER = 20
+  final val P21_FIELD_NUMBER = 21
+  final val P22_FIELD_NUMBER = 22
 }

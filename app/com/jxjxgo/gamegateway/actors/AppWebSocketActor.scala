@@ -12,11 +12,13 @@ import com.jxjxgo.common.helper.GZipHelper
 import com.jxjxgo.gamegateway.domain.ws.req.socketrequest.SocketRequest
 import com.jxjxgo.sso.rpc.domain.SessionResponse
 import com.typesafe.config.ConfigFactory
+import org.slf4j.{Logger, LoggerFactory}
 
 /**
   * Created by fangzhongwei on 2017/1/21.
   */
 object AppWebSocketActor {
+  private[this] val logger: Logger = LoggerFactory.getLogger(getClass)
   private[this] val map: ConcurrentHashMap[String, ActorRef] = new ConcurrentHashMap[String, ActorRef]()
   private[this] val memberMap: ConcurrentHashMap[String, (Long, SessionResponse)] = new ConcurrentHashMap[String, (Long, SessionResponse)]()
 
@@ -30,6 +32,12 @@ object AppWebSocketActor {
       actor ! date
     }
     date
+  }
+
+  def pushMessage(key: String, array: Array[Byte]) = {
+    val ref: ActorRef = map.get(key)
+    if (ref != null) ref ! array
+    else logger.error(s"did not find actor for key : $key")
   }
 
   def props(out: ActorRef) = {
@@ -69,6 +77,7 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
     println("actor register ...")
+    //todo generate socket id
   }
 
   def receive = {
@@ -97,6 +106,8 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
               case false =>
                 login = true
                 token = info._2.token
+                AppWebSocketActor.putActor(new StringBuilder(info._2.memberId.toString).append('_').append(info._2.fingerPrint).toString(), out)
+              // todo call online
               case true => log.error(s"invalid ws:[tk:$tk]")
                 killSelf
             }
@@ -131,6 +142,7 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
   override def postStop() = {
     AppWebSocketActor.removeActor(token)
     AppWebSocketActor.removeMember(token)
+    // todo call offline
     println(s"me stop ...")
   }
 }

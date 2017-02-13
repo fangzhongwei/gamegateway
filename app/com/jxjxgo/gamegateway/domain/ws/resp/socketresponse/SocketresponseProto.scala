@@ -9,10 +9,13 @@ object SocketresponseProto {
   lazy val descriptor: com.google.protobuf.Descriptors.FileDescriptor = {
     val proto = com.google.protobuf.DescriptorProtos.FileDescriptorProto.parseFrom(
       com.trueaccord.scalapb.Encoding.fromBase64(scala.collection.Seq(
-  """ChhyZXEvc29ja2V0cmVzcG9uc2UucHJvdG8ioAEKDlNvY2tldFJlc3BvbnNlEg4KAnAxGAEgASgJUgJwMRIOCgJwMhgCIAEoC
-  VICcDISDgoCcDMYAyABKAlSAnAzEg4KAnA0GAQgASgJUgJwNBIOCgJwNRgFIAEoCVICcDUSDgoCcDYYBiABKAlSAnA2Eg4KAnA3G
-  AcgASgJUgJwNxIOCgJwOBgIIAEoCVICcDgSDgoCcDkYCSABKAlSAnA5QicKJWNvbS5qeGp4Z28uZ2FtZWdhdGV3YXkuZG9tYWluL
-  ndzLnJlc3BiBnByb3RvMw=="""
+  """ChlyZXNwL3NvY2tldHJlc3BvbnNlLnByb3RvIooDCg5Tb2NrZXRSZXNwb25zZRIOCgJwMRgBIAEoCVICcDESDgoCcDIYAiABK
+  AlSAnAyEg4KAnAzGAMgASgJUgJwMxIOCgJwNBgEIAEoCVICcDQSDgoCcDUYBSABKAlSAnA1Eg4KAnA2GAYgASgJUgJwNhIOCgJwN
+  xgHIAEoCVICcDcSDgoCcDgYCCABKAlSAnA4Eg4KAnA5GAkgASgJUgJwORIQCgNwMTAYCiABKAlSA3AxMBIQCgNwMTEYCyABKAlSA
+  3AxMRIQCgNwMTIYDCABKAlSA3AxMhIQCgNwMTMYDSABKAlSA3AxMxIQCgNwMTQYDiABKAlSA3AxNBIQCgNwMTUYDyABKAlSA3AxN
+  RIQCgNwMTYYECABKAlSA3AxNhIQCgNwMTcYESABKAlSA3AxNxIQCgNwMTgYEiABKAlSA3AxOBIQCgNwMTkYEyABKAlSA3AxORIQC
+  gNwMjAYFCABKAlSA3AyMBIQCgNwMjEYFSABKAlSA3AyMRIQCgNwMjIYFiABKAlSA3AyMkInCiVjb20uanhqeGdvLmdhbWVnYXRld
+  2F5LmRvbWFpbi53cy5yZXNwYgZwcm90bzM="""
       ).mkString))
     com.google.protobuf.Descriptors.FileDescriptor.buildFrom(proto, Array(
     ))
