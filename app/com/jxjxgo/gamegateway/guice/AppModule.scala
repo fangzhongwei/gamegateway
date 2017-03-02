@@ -26,8 +26,6 @@ class AppModule extends AbstractModule{
     val config: Config = ConfigFactory.load()
     bind(new TypeLiteral[SSOServiceEndpoint[Future]]() {}).toInstance(Thrift.client.newIface[SSOServiceEndpoint[Future]](config.getString("sso.thrift.host.port")))
     bind(new TypeLiteral[GameEndpoint[Future]]() {}).toInstance(Thrift.client.newIface[GameEndpoint[Future]](config.getString("gamecenter.thrift.host.port")))
-    bind(classOf[RedisClientTemplate]).to(classOf[RedisClientTemplateImpl]).asEagerSingleton()
-    bind(classOf[RabbitmqProducerTemplate]).to(classOf[RabbitmqProducerTemplateImpl]).asEagerSingleton()
     bind(classOf[InstanceHolder]).to(classOf[InstanceHolderImpl]).asEagerSingleton()
 
     bind(classOf[ThriftService]).to(classOf[GameGatewayEndpointImpl]).asEagerSingleton()
