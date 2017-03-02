@@ -38,7 +38,10 @@ object AppWebSocketActor {
 
   def pushMessage(key: String, array: Array[Byte]) = {
     val ref: ActorRef = map.get(key)
-    if (ref != null) ref ! array
+    logger.info(s"do push, key:$key, length: ${array.length}, ref:$ref")
+    if (ref != null) {
+      ref ! DESUtils.encrypt(GZipHelper.compress(array), AppWebSocketActor.defaultKey)
+    }
     else logger.error(s"did not find actor for key : $key")
   }
 
@@ -122,20 +125,21 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
                   case true =>
                     token = tk
                     memberId = response.memberId
-                    socketId = response.memberId
                     deviceType = response.deviceType
                     fingerPrint = response.fingerPrint
-//                    log.info(s"remote ip is:${out.path.address.host}")
-//                    ip = IPv4Helper.ipToLong(out.path.address.host.get)
+                    //                    log.info(s"remote ip is:${out.path.address.host}")
+                    //                    ip = IPv4Helper.ipToLong(out.path.address.host.get)
                     ip = response.ip
                     AppWebSocketActor.putMember(tk, (response.memberId, response))
                     AppWebSocketActor.putActor(new StringBuilder(memberId.toString).append('_').append(response.fingerPrint).toString(), out)
                     val generateSocketIdResponse: GenerateSocketIdResponse = Await.result(AppWebSocketActor.gameEndpoint.generateSocketId(traceId))
                     generateSocketIdResponse.code match {
                       case "0" =>
-                        AppWebSocketActor.gameEndpoint.playerOnline(traceId, OnlineRequest(generateSocketIdResponse.socketId, memberId, response.ip, response.deviceType, response.fingerPrint, ConfigFactory.load().getString("finagle.thrift.host.port")))
+                        val sockId: Long = generateSocketIdResponse.socketId
+                        socketId = sockId
+                        AppWebSocketActor.gameEndpoint.playerOnline(traceId, OnlineRequest(sockId, memberId, response.ip, response.deviceType, response.fingerPrint, ConfigFactory.load().getString("finagle.thrift.host.port")))
                       case _ =>
-                        log.error(s"generateSocketId eroor, code:${generateSocketIdResponse.code}")
+                        log.error(s"generateSocketId error, code:${generateSocketIdResponse.code}")
                         killSelf
                     }
                   case false =>
@@ -188,6 +192,7 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
   override def postStop() = {
     AppWebSocketActor.removeActor(token)
     AppWebSocketActor.removeMember(token)
+
     AppWebSocketActor.gameEndpoint.playerOffline(UUIDHelper.generate(), socketId, memberId)
   }
 }
