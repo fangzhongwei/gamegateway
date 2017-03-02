@@ -30,7 +30,7 @@ class WebSocketController @Inject()(implicit system: ActorSystem, materializer: 
   }
 
   def checkIdentity(request: RequestHeader): Boolean = {
-    logger.error(s"socket headers:${request.headers}")
+    logger.info(s"socket headers:${request.headers}")
     true
   }
 

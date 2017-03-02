@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap
 import akka.actor._
 import com.jxjxgo.common.edecrypt.DESUtils
 import com.jxjxgo.common.helper.{GZipHelper, UUIDHelper}
-import com.jxjxgo.gamecenter.rpc.domain.{GameEndpoint, GenerateSocketIdResponse, JoinGameRequest, OnlineRequest}
+import com.jxjxgo.gamecenter.rpc.domain._
 import com.jxjxgo.gamegateway.domain.ws.req.socketrequest.SocketRequest
 import com.jxjxgo.sso.rpc.domain.{SSOServiceEndpoint, SessionResponse}
 import com.twitter.util.{Await, Future}
@@ -160,14 +160,16 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
                     operate match {
                       case "join" =>
                         val gameType: Int = r.p5.toInt
-                        AppWebSocketActor.gameEndpoint.joinGame(traceId, JoinGameRequest(memberId, socketId, deviceType, fingerPrint, ip, gameType, 0))
+                        log.info("now call game center to join.")
+                        val result: GameBaseResponse = Await.result(AppWebSocketActor.gameEndpoint.joinGame(traceId, JoinGameRequest(memberId, socketId, deviceType, fingerPrint, ip, gameType, 0)))
+                        log.info(s"join result is : $result")
                       case "playCards" =>
                       case _ =>
                         log.error("unknown operate")
                         killSelf
                     }
                   case false =>
-                    log.error("operate without login")
+                    log.error("checkSession not pass.")
                     killSelf
                 }
             }
