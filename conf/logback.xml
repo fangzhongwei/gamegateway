@@ -2,10 +2,15 @@
 
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel"/>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/application.log</file>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>true</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--<fileNamePattern>d:\\logs\\jxjxgo\\gamegateway\\log-%d{yyyy-MM-dd}.log</fileNamePattern>-->
+            <fileNamePattern>/var/log/jxjxgo/gamegateway/log-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <append>true</append>
         <encoder>
-            <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+            <pattern>%highlight([%level]) - [%date] - [%logger]  %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -29,7 +34,6 @@
     <logger name="controllers" level="INFO"/>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
 

@@ -8,9 +8,11 @@ import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor._
 import com.jxjxgo.common.edecrypt.DESUtils
-import com.jxjxgo.common.helper.GZipHelper
+import com.jxjxgo.common.helper.{GZipHelper, UUIDHelper}
+import com.jxjxgo.gamecenter.rpc.domain.{GameEndpoint, GenerateSocketIdResponse, JoinGameRequest, OnlineRequest}
 import com.jxjxgo.gamegateway.domain.ws.req.socketrequest.SocketRequest
-import com.jxjxgo.sso.rpc.domain.SessionResponse
+import com.jxjxgo.sso.rpc.domain.{SSOServiceEndpoint, SessionResponse}
+import com.twitter.util.{Await, Future}
 import com.typesafe.config.ConfigFactory
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -68,11 +70,20 @@ object AppWebSocketActor {
     map.get(identity) ! PoisonPill
     "success"
   }
+
+  var ssoClientService: SSOServiceEndpoint[Future] = _
+  var gameEndpoint: GameEndpoint[Future] = _
+
+
 }
 
 class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
-  private var login = false
-  private var token: String = ""
+  private[this] var token: String = _
+  private[this] var memberId: Long = _
+  private[this] var socketId: Long = _
+  private[this] var deviceType: Int = _
+  private[this] var fingerPrint: String = _
+  private[this] var ip: Long = _
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
@@ -98,41 +109,74 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
 
       if (uncompress != null) {
         val r: SocketRequest = SocketRequest.parseFrom(uncompress)
+        log.info(s"receive SockerRequest:$r")
+        val traceId: String = r.p1
+        val tk: String = r.p3
+        val fp: String = r.p4
         r.p2 match {
           case "login" =>
-            val tk: String = r.p3
-            val info: (Long, SessionResponse) = AppWebSocketActor.getMemberInfo(tk)
-            info == null match {
-              case false =>
-                login = true
-                token = info._2.token
-                AppWebSocketActor.putActor(new StringBuilder(info._2.memberId.toString).append('_').append(info._2.fingerPrint).toString(), out)
-              // todo call online
-              case true => log.error(s"invalid ws:[tk:$tk]")
+            val response: SessionResponse = Await.result(AppWebSocketActor.ssoClientService.touch(traceId, tk))
+            response.code match {
+              case "0" =>
+                response.fingerPrint.equals(fp) match {
+                  case true =>
+                    token = tk
+                    memberId = response.memberId
+                    socketId = response.memberId
+                    deviceType = response.deviceType
+                    fingerPrint = response.fingerPrint
+//                    log.info(s"remote ip is:${out.path.address.host}")
+//                    ip = IPv4Helper.ipToLong(out.path.address.host.get)
+                    ip = response.ip
+                    AppWebSocketActor.putMember(tk, (response.memberId, response))
+                    AppWebSocketActor.putActor(new StringBuilder(memberId.toString).append('_').append(response.fingerPrint).toString(), out)
+                    val generateSocketIdResponse: GenerateSocketIdResponse = Await.result(AppWebSocketActor.gameEndpoint.generateSocketId(traceId))
+                    generateSocketIdResponse.code match {
+                      case "0" =>
+                        AppWebSocketActor.gameEndpoint.playerOnline(traceId, OnlineRequest(generateSocketIdResponse.socketId, memberId, response.ip, response.deviceType, response.fingerPrint, ConfigFactory.load().getString("finagle.thrift.host.port")))
+                      case _ =>
+                        log.error(s"generateSocketId eroor, code:${generateSocketIdResponse.code}")
+                        killSelf
+                    }
+                  case false =>
+                    log.error(s"fingerPrint not matched.")
+                    killSelf
+                }
+              case _ =>
+                log.error(s"invalid ws:[tk:$tk]")
                 killSelf
             }
           case operate: String =>
-            checkSession match {
+
+            val memberInfo: (Long, SessionResponse) = AppWebSocketActor.getMemberInfo(tk)
+
+            memberInfo == null match {
               case true =>
-                operate match {
-                  case "join" =>
-                    val traceId: String = r.p1
-                    traceId
-                  case "playCards" =>
-                  case _ =>
-                    log.error("unknown operate")
+                log.error("memberInfo not found.")
+                killSelf
+              case false =>
+                checkSession(memberInfo._2) match {
+                  case true =>
+                    operate match {
+                      case "join" =>
+                        val gameType: Int = r.p5.toInt
+                        AppWebSocketActor.gameEndpoint.joinGame(traceId, JoinGameRequest(memberId, socketId, deviceType, fingerPrint, ip, gameType, 0))
+                      case "playCards" =>
+                      case _ =>
+                        log.error("unknown operate")
+                        killSelf
+                    }
+                  case false =>
+                    log.error("operate without login")
                     killSelf
                 }
-              case false =>
-                log.error("operate without login")
-                killSelf
             }
         }
       }
   }
 
-  private def checkSession = {
-    login && !token.equals("")
+  private def checkSession(s: SessionResponse): Boolean = {
+    token.equals(s.token) && memberId == s.memberId && socketId != 0 && deviceType == s.deviceType && fingerPrint.equals(s.fingerPrint)
   }
 
   def killSelf = {
@@ -142,7 +186,6 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
   override def postStop() = {
     AppWebSocketActor.removeActor(token)
     AppWebSocketActor.removeMember(token)
-    // todo call offline
-    println(s"me stop ...")
+    AppWebSocketActor.gameEndpoint.playerOffline(UUIDHelper.generate(), socketId, memberId)
   }
 }

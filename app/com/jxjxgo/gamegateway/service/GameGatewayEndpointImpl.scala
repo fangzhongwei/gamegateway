@@ -8,12 +8,13 @@ import com.jxjxgo.scrooge.thrift.template.ScroogeThriftServerTemplate
 import com.twitter.util.Future
 import play.inject.Injector
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 
 /**
   * Created by fangzhongwei on 2017/2/13.
   */
-class GameGatewayEndpointImpl @Inject() (injector: Injector) extends GameGatewayEndpoint[Future] {
+class GameGatewayEndpointImpl @Inject()(injector: Injector) extends GameGatewayEndpoint[Future] {
   override def push(traceId: String, r: SocketResponse): Future[GameGatewayBaseResponse] = {
     //    1: string code,
     //    2: string action,
@@ -37,7 +38,7 @@ class GameGatewayEndpointImpl @Inject() (injector: Injector) extends GameGateway
     Future.value(GameGatewayBaseResponse("0"))
   }
 
-  def startRpc():scala.concurrent.Future[Unit] = {
+  def startRpc(): scala.concurrent.Future[Unit] = {
     val promise: Promise[Unit] = Promise[Unit]()
     scala.concurrent.Future {
       injector.instanceOf(classOf[ScroogeThriftServerTemplate]).init
