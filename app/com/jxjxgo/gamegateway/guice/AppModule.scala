@@ -5,8 +5,6 @@ import java.util
 import com.google.inject.{AbstractModule, TypeLiteral}
 import com.google.inject.name.Names
 import com.jxjxgo.common.helper.ConfigHelper
-import com.jxjxgo.common.rabbitmq.{RabbitmqProducerTemplate, RabbitmqProducerTemplateImpl}
-import com.jxjxgo.common.redis.{RedisClientTemplate, RedisClientTemplateImpl}
 import com.jxjxgo.gamecenter.rpc.domain.GameEndpoint
 import com.jxjxgo.gamegateway.service.GameGatewayEndpointImpl
 import com.jxjxgo.scrooge.thrift.template.{ScroogeThriftServerTemplate, ScroogeThriftServerTemplateImpl}
