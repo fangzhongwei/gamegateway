@@ -77,7 +77,6 @@ object AppWebSocketActor {
   var ssoClientService: SSOServiceEndpoint[Future] = _
   var gameEndpoint: GameEndpoint[Future] = _
 
-
 }
 
 class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
@@ -167,7 +166,25 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
                         log.info("now call game center to join.")
                         val result: GameBaseResponse = Await.result(AppWebSocketActor.gameEndpoint.joinGame(traceId, JoinGameRequest(memberId, socketId, deviceType, fingerPrint, ip, gameType, 0)))
                         log.info(s"join result is : $result")
+                      case "takeLandlord" =>
+                        val gameId = r.p5.toLong
+                        val seatId = r.p6.toLong
+                        val take = r.p7.toBoolean
+
+                        AppWebSocketActor.gameEndpoint.takeLandlord(traceId, TakeLandlordRequest(memberId, gameId, seatId, take))
                       case "playCards" =>
+                        val gameId = r.p5.toLong
+                        val seatId = r.p6.toLong
+                        val seqInGame = r.p7.toInt
+                        val cardsType = r.p8
+                        val keys = r.p9
+                        val playPoints = r.p10
+                        val handPoints = r.p11
+
+                        AppWebSocketActor.gameEndpoint.playCards(traceId, PlayCardsRequest(memberId, gameId, seatId, seqInGame, cardsType,
+                          if ("Pass".equals(cardsType)) Nil else keys.split(",").map(_.toInt),
+                          if ("Pass".equals(cardsType)) Nil else playPoints.split(",").map(_.toInt),
+                          handPoints.split(",").map(_.toInt)))
                       case _ =>
                         log.error("unknown operate")
                         killSelf

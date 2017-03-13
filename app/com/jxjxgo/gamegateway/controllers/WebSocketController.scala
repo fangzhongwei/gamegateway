@@ -5,8 +5,6 @@ import javax.inject.{Inject, Singleton}
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.jxjxgo.gamegateway.actors.AppWebSocketActor
-import com.jxjxgo.sso.rpc.domain.SSOServiceEndpoint
-import com.twitter.util.Future
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.{Action, Controller, RequestHeader, WebSocket}
