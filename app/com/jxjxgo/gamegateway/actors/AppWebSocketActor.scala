@@ -89,112 +89,115 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
 
   @scala.throws[Exception](classOf[Exception])
   override def preStart(): Unit = {
-    println("actor register ...")
-    //todo generate socket id
+    println("actor preStart ...")
   }
 
   def receive = {
     case buffer: Array[Byte] =>
-      println(s"receive bytes , length:${buffer.length}")
-
-      var decrypt: Array[Byte] = null
-      var uncompress: Array[Byte] = null
-
       try {
-        decrypt = DESUtils.decrypt(buffer, AppWebSocketActor.defaultKey)
-        uncompress = GZipHelper.uncompress(decrypt)
+        var decrypt: Array[Byte] = null
+        var uncompress: Array[Byte] = null
+
+        try {
+          decrypt = DESUtils.decrypt(buffer, AppWebSocketActor.defaultKey)
+          uncompress = GZipHelper.uncompress(decrypt)
+        } catch {
+          case ex: Exception =>
+            log.error(ex, "parse error")
+            killSelf
+        }
+
+        if (uncompress != null) {
+          val r: SocketRequest = SocketRequest.parseFrom(uncompress)
+          log.info(s"receive SockerRequest:$r")
+
+          val traceId: String = r.p1
+          val tk: String = r.p3
+          val fp: String = r.p4
+          r.p2 match {
+            case "login" =>
+              val response: SessionResponse = Await.result(AppWebSocketActor.ssoClientService.touch(traceId, tk))
+              response.code match {
+                case "0" =>
+                  response.fingerPrint.equals(fp) match {
+                    case true =>
+                      token = tk
+                      memberId = response.memberId
+                      deviceType = response.deviceType
+                      fingerPrint = response.fingerPrint
+                      //                    log.info(s"remote ip is:${out.path.address.host}")
+                      //                    ip = IPv4Helper.ipToLong(out.path.address.host.get)
+                      ip = response.ip
+                      AppWebSocketActor.putMember(tk, (response.memberId, response))
+                      AppWebSocketActor.putActor(new StringBuilder(memberId.toString).append('_').append(response.fingerPrint).toString(), out)
+                      val generateSocketIdResponse: GenerateSocketIdResponse = Await.result(AppWebSocketActor.gameEndpoint.generateSocketId(traceId))
+                      generateSocketIdResponse.code match {
+                        case "0" =>
+                          val sockId: Long = generateSocketIdResponse.socketId
+                          socketId = sockId
+                          AppWebSocketActor.gameEndpoint.playerOnline(traceId, OnlineRequest(sockId, memberId, response.ip, response.deviceType, response.fingerPrint, ConfigFactory.load().getString("finagle.thrift.host.port")))
+                        case _ =>
+                          log.error(s"generateSocketId error, code:${generateSocketIdResponse.code}")
+                          killSelf
+                      }
+                    case false =>
+                      log.error(s"fingerPrint not matched.")
+                      killSelf
+                  }
+                case _ =>
+                  log.error(s"invalid ws:[tk:$tk]")
+                  killSelf
+              }
+            case operate: String =>
+
+              val memberInfo: (Long, SessionResponse) = AppWebSocketActor.getMemberInfo(tk)
+
+              memberInfo == null match {
+                case true =>
+                  log.error("memberInfo not found.")
+                  killSelf
+                case false =>
+                  checkSession(memberInfo._2) match {
+                    case true =>
+                      operate match {
+                        case "join" =>
+                          val gameType: Int = r.p5.toInt
+                          log.info("now call game center to join.")
+                          val result: GameBaseResponse = Await.result(AppWebSocketActor.gameEndpoint.joinGame(traceId, JoinGameRequest(memberId, socketId, deviceType, fingerPrint, ip, gameType, 0)))
+                          log.info(s"join result is : $result")
+                        case "takeLandlord" =>
+                          val gameId = r.p5.toLong
+                          val seatId = r.p6.toLong
+                          val take = r.p7.toBoolean
+
+                          AppWebSocketActor.gameEndpoint.takeLandlord(traceId, TakeLandlordRequest(memberId, gameId, seatId, take))
+                        case "playCards" =>
+                          val gameId = r.p5.toLong
+                          val seatId = r.p6.toLong
+                          val seqInGame = r.p7.toInt
+                          val cardsType = r.p8
+                          val keys = r.p9
+                          val playPoints = r.p10
+                          val handPoints = r.p11
+
+                          AppWebSocketActor.gameEndpoint.playCards(traceId, PlayCardsRequest(memberId, gameId, seatId, seqInGame, cardsType,
+                            if ("Pass".equals(cardsType)) Nil else keys.split(",").map(_.toInt),
+                            if ("Pass".equals(cardsType)) Nil else playPoints.split(",").map(_.toInt),
+                            handPoints.split(",").map(_.toInt)))
+                        case _ =>
+                          log.error("unknown operate")
+                          killSelf
+                      }
+                    case false =>
+                      log.error("checkSession not pass.")
+                      killSelf
+                  }
+              }
+          }
+        }
       } catch {
         case ex: Exception =>
-          log.error(ex, "parse error")
-          killSelf
-      }
-
-      if (uncompress != null) {
-        val r: SocketRequest = SocketRequest.parseFrom(uncompress)
-        log.info(s"receive SockerRequest:$r")
-        val traceId: String = r.p1
-        val tk: String = r.p3
-        val fp: String = r.p4
-        r.p2 match {
-          case "login" =>
-            val response: SessionResponse = Await.result(AppWebSocketActor.ssoClientService.touch(traceId, tk))
-            response.code match {
-              case "0" =>
-                response.fingerPrint.equals(fp) match {
-                  case true =>
-                    token = tk
-                    memberId = response.memberId
-                    deviceType = response.deviceType
-                    fingerPrint = response.fingerPrint
-                    //                    log.info(s"remote ip is:${out.path.address.host}")
-                    //                    ip = IPv4Helper.ipToLong(out.path.address.host.get)
-                    ip = response.ip
-                    AppWebSocketActor.putMember(tk, (response.memberId, response))
-                    AppWebSocketActor.putActor(new StringBuilder(memberId.toString).append('_').append(response.fingerPrint).toString(), out)
-                    val generateSocketIdResponse: GenerateSocketIdResponse = Await.result(AppWebSocketActor.gameEndpoint.generateSocketId(traceId))
-                    generateSocketIdResponse.code match {
-                      case "0" =>
-                        val sockId: Long = generateSocketIdResponse.socketId
-                        socketId = sockId
-                        AppWebSocketActor.gameEndpoint.playerOnline(traceId, OnlineRequest(sockId, memberId, response.ip, response.deviceType, response.fingerPrint, ConfigFactory.load().getString("finagle.thrift.host.port")))
-                      case _ =>
-                        log.error(s"generateSocketId error, code:${generateSocketIdResponse.code}")
-                        killSelf
-                    }
-                  case false =>
-                    log.error(s"fingerPrint not matched.")
-                    killSelf
-                }
-              case _ =>
-                log.error(s"invalid ws:[tk:$tk]")
-                killSelf
-            }
-          case operate: String =>
-
-            val memberInfo: (Long, SessionResponse) = AppWebSocketActor.getMemberInfo(tk)
-
-            memberInfo == null match {
-              case true =>
-                log.error("memberInfo not found.")
-                killSelf
-              case false =>
-                checkSession(memberInfo._2) match {
-                  case true =>
-                    operate match {
-                      case "join" =>
-                        val gameType: Int = r.p5.toInt
-                        log.info("now call game center to join.")
-                        val result: GameBaseResponse = Await.result(AppWebSocketActor.gameEndpoint.joinGame(traceId, JoinGameRequest(memberId, socketId, deviceType, fingerPrint, ip, gameType, 0)))
-                        log.info(s"join result is : $result")
-                      case "takeLandlord" =>
-                        val gameId = r.p5.toLong
-                        val seatId = r.p6.toLong
-                        val take = r.p7.toBoolean
-
-                        AppWebSocketActor.gameEndpoint.takeLandlord(traceId, TakeLandlordRequest(memberId, gameId, seatId, take))
-                      case "playCards" =>
-                        val gameId = r.p5.toLong
-                        val seatId = r.p6.toLong
-                        val seqInGame = r.p7.toInt
-                        val cardsType = r.p8
-                        val keys = r.p9
-                        val playPoints = r.p10
-                        val handPoints = r.p11
-
-                        AppWebSocketActor.gameEndpoint.playCards(traceId, PlayCardsRequest(memberId, gameId, seatId, seqInGame, cardsType,
-                          if ("Pass".equals(cardsType)) Nil else keys.split(",").map(_.toInt),
-                          if ("Pass".equals(cardsType)) Nil else playPoints.split(",").map(_.toInt),
-                          handPoints.split(",").map(_.toInt)))
-                      case _ =>
-                        log.error("unknown operate")
-                        killSelf
-                    }
-                  case false =>
-                    log.error("checkSession not pass.")
-                    killSelf
-                }
-            }
-        }
+          log.error("error", ex)
       }
   }
 
@@ -207,9 +210,13 @@ class AppWebSocketActor(out: ActorRef) extends Actor with ActorLogging {
   }
 
   override def postStop() = {
-    AppWebSocketActor.removeActor(token)
-    AppWebSocketActor.removeMember(token)
+    if (token != null) {
+      AppWebSocketActor.removeActor(token)
+      AppWebSocketActor.removeMember(token)
+    }
 
-    AppWebSocketActor.gameEndpoint.playerOffline(UUIDHelper.generate(), socketId, memberId)
+    if (socketId != 0 && memberId != 0) {
+      AppWebSocketActor.gameEndpoint.playerOffline(UUIDHelper.generate(), socketId, memberId)
+    }
   }
 }

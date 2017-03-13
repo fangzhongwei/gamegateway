@@ -38,6 +38,7 @@ class GameGatewayEndpointImpl @Inject()(injector: Injector) extends GameGatewayE
     //    17: string fingerPrint = "",
     //    18: long memberId = 0,
     //    19: long seatId = 0,
+    //    20: int seqInGame = 0,
     logger.info(s"receive socket push message:$r")
     AppWebSocketActor.pushMessage(new StringBuilder(r.p18).append('_').append(r.p17).toString(),
       com.jxjxgo.gamegateway.domain.ws.resp.socketresponse.SocketResponse(r.p1, r.p2, r.p3, r.p4, r.p5, r.p6, r.p7, r.p8, r.p9, r.p10, r.p11, r.p12, r.p13, r.p14, r.p15, r.p16, r.p17, r.p18, r.p19, r.p20, r.p21, r.p22).toByteArray)

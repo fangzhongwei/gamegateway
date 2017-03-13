@@ -20,6 +20,7 @@ class WebSocketController @Inject()(implicit system: ActorSystem, materializer: 
   def greeter = WebSocket.acceptOrResult[Array[Byte], Array[Byte]] { request =>
     scala.concurrent.Future.successful(checkIdentity(request) match {
       case true =>
+        logger.info(s"request.remoteAddress : ${request.remoteAddress}")
         Right(ActorFlow.actorRef(AppWebSocketActor.props))
       case false =>
         logger.error(s"Invalid request : $request")
